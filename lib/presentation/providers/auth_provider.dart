@@ -1,7 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:gnosis_mobile/data/models/user_model.dart';
 import 'package:gnosis_mobile/data/repositories/auth_repository.dart';
 import 'package:gnosis_mobile/core/errors/failures.dart';
+
+part 'auth_provider.freezed.dart';
 
 final authProvider = StateNotifierProvider<AuthNotifier, AuthState>((ref) {
   return AuthNotifier(ref.read(authRepositoryProvider));

@@ -1,7 +1,8 @@
 import 'package:dartz/dartz.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:gnosis_mobile/data/models/user_model.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:gnosis_mobile/data/models/user_model.dart' as user_model;
 import 'package:gnosis_mobile/core/errors/failures.dart';
 import 'package:gnosis_mobile/domain/repositories/i_auth_repository.dart';
 
@@ -19,7 +20,7 @@ class AuthRepository implements IAuthRepository {
   AuthRepository(this._supabaseClient, this._secureStorage);
 
   @override
-  Future<Either<Failure, User>> signIn(String email, String password) async {
+  Future<Either<Failure, user_model.User>> signIn(String email, String password) async {
     try {
       final response = await _supabaseClient.auth.signInWithPassword(
         email: email,
@@ -30,7 +31,7 @@ class AuthRepository implements IAuthRepository {
         return const Left(AuthenticationFailure('Sign in failed'));
       }
 
-      final user = User(
+      final user = user_model.User(
         id: response.user!.id,
         email: response.user!.email!,
         name: response.user!.userMetadata?['name'] ?? 'User',
@@ -58,7 +59,7 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> signUp(String email, String password, String name) async {
+  Future<Either<Failure, user_model.User>> signUp(String email, String password, String name) async {
     try {
       final response = await _supabaseClient.auth.signUp(
         email: email,
@@ -70,7 +71,7 @@ class AuthRepository implements IAuthRepository {
         return const Left(AuthenticationFailure('Sign up failed'));
       }
 
-      final user = User(
+      final user = user_model.User(
         id: response.user!.id,
         email: response.user!.email!,
         name: name,
@@ -100,7 +101,7 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> getCurrentUser() async {
+  Future<Either<Failure, user_model.User>> getCurrentUser() async {
     try {
       final currentUser = _supabaseClient.auth.currentUser;
       
@@ -108,7 +109,7 @@ class AuthRepository implements IAuthRepository {
         return const Left(AuthenticationFailure('No user signed in'));
       }
 
-      final user = User(
+      final user = user_model.User(
         id: currentUser.id,
         email: currentUser.email!,
         name: currentUser.userMetadata?['name'] ?? 'User',
@@ -124,7 +125,7 @@ class AuthRepository implements IAuthRepository {
   }
 
   @override
-  Future<Either<Failure, User>> updateProfile(User user) async {
+  Future<Either<Failure, user_model.User>> updateProfile(user_model.User user) async {
     try {
       final response = await _supabaseClient.auth.updateUser(
         UserAttributes(
@@ -135,7 +136,7 @@ class AuthRepository implements IAuthRepository {
         ),
       );
 
-      final updatedUser = User(
+      final updatedUser = user_model.User(
         id: response.user!.id,
         email: response.user!.email!,
         name: response.user!.userMetadata?['name'] ?? 'User',
